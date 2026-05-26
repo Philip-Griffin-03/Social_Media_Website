@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Game Viewer</title>
+    <link rel="stylesheet" href="maincss.css">
+</head>
+
+<header>
+    <!--Website Image Title-->
+    <img class="title-img" src="img/title.png">
+
+    <!--Content search-->
+    <input type="text" class="searchInput" id="searchInput" placeholder="Type something to search...">
+    <button class = "searchBtn" id="searchBtn" onclick="searchcontent()">Search</button>
+
+    <!--User search-->
+    <input type="text" class="nameInput" id="nameInput" placeholder="Type name to search...">
+    <button class = "nameBtn" id="nameBtn" onclick="searchusers()">Search</button>
+
+    <!--Add content-->
+    <input type="text" class = "titleInput" id="titleInput" placeholder="Enter a title" />
+    <textarea class="paragraphInput"  id="paragraphInput" rows="4" cols="50" placeholder="Type your paragraph here..."></textarea><br><br>
+    <button class="parasubmit" id="parasubmit" onclick="addpara()">Submit</button>
+
+    <!--Login and status check-->
+    <input type="text" class="username" id="username" placeholder="Username">
+    <input type="password" class="password" id="password" placeholder="Password">
+    <button id="loginButton" class="loginbtn" onclick="login()">Login</button>
+    <button id="logoutbutton" class="logoutbtn" onclick="logout()">Logout</button>
+    <button id="test" onclick="checkloginstatus()">Check status</button>
+
+    <!--Registration-->
+    <input type="text" class="registerusername" id="registerusername" placeholder="Username">
+    <input type="password" class="registerpassword" id="registerpassword" placeholder="Password">
+    <button id="registerButton" class="registerbtn" onclick="register()">register</button>
+
+    <!--Refresh content on page-->
+    <button id="refreshButton" class="refreshbtn" onclick="refresh()">Refresh Content</button>
+    
+    
+
+</header>
+
+<body>
+
+    <!--Handles what is displayed to the user-->
+    <p class = "responseMessage" id="responseMessage" style="color: white;"></p>
+    <p class = "registerMessage" id="registerMessage" style="color: white;"></p>
+    <p class = "loginMessage" id="loginMessage" style="color: white;"></p>
+
+    <div  class="results-section" id="results"></div> 
+
+</body>
+
+    <script>
+
+    function refresh(){//Method to refresh and clear page
+        document.getElementById("results").innerHTML = '';
+    }
+
+    async function checkloginstatus(){//checks current user logged in
+        const response = await fetch("/M00961140/login");
+        const data = await response.json();
+        console.log("sss",data);
+        if (!data.username){//checks if there is session user, if none then message displayed  
+            document.getElementById("registerMessage").innerHTML = "No User Logged in";
+        setTimeout(() => {//this ensures message is only displayed for short time then removed
+            document.getElementById("registerMessage").innerHTML = "";
+        }, 1750);
+        }
+        else{//if session user is found then username is displayed
+        document.getElementById("registerMessage").innerHTML = "Logged in User: " + data.username;
+        setTimeout(() => {
+            document.getElementById("registerMessage").innerHTML = "";
+        }, 1750);}
+    }
+
+    async function logout(){//handles logging current user out
+        try {
+    const response = await fetch('http://localhost:8080/M00961140/login', {
+      method: 'DELETE',
+      credentials: 'include', 
+    });
+
+    const result = await response.json();
+    console.log(result);
+
+    if (response.status === 200) {//checks for correct status and displays message if log out was successful
+        document.getElementById("registerMessage").innerHTML = "Logged out!";
+        setTimeout(() => {
+            document.getElementById("registerMessage").innerHTML = "";
+        }, 1750);
+    } else {
+      alert('Logout failed');
+    }
+  } catch (error) {
+    console.error('Error during logout:', error);
+  }
+    }
+
+    async function login(){//handles logging in
+
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        if (username.trim() == "" || password.trim() == "") {//checks if either username or password is left empty by user
+            alert('Please enter a username and password!');
+            return;
+        }
+
+        const details = JSON.stringify({username: username, password: password});
+
+        const response = await fetch ("/M00961140/login",{
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: details
+        })
+        const result = await response.json();
+        console.log(result);
+
+        if (result.status == "success"){//checks if status from response is success, if so then values are emptied and message displayed  
+            document.getElementById("registerMessage").innerHTML = "Logged in!";
+            document.getElementById("username").value = '';
+            document.getElementById("password").value = '';
+            setTimeout(() => {
+                document.getElementById("registerMessage").innerHTML = "";
+            }, 1750);
+        }
+        else{//if check fails then message to say login has failed
+            document.getElementById("registerMessage").innerHTML = "Invalid Login details!";
+            setTimeout(() => {
+                document.getElementById("registerMessage").innerHTML = "";
+            }, 1750);
+
+        }
+    }
+
+    async function register(){//handles registering user
+        const username = document.getElementById("registerusername").value;
+        const password = document.getElementById("registerpassword").value;
+
+        if (username.trim() == "" || password.trim() == "") {//checks if user has left username or password field empty
+            alert('Please enter a username and password!');
+            return;
+        }
+        else if (password.trim().length < 8){//also checks if password is above 8 characters
+            alert("Password has to be 8 characters long!");
+            return;
+        }
+        const registerjson = JSON.stringify({username: username, password: password});
+
+        try{
+            const response = await fetch ("/M00961140/users",{
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: registerjson
+            });
+            const result = await response.json();
+            console.log(result);
+
+            document.getElementById("registerMessage").innerHTML = "Registered!";//Displays message when registered as well as emptying value fields
+            document.getElementById("registerusername").value = '';
+            document.getElementById("registerpassword").value = '';
+            setTimeout(() => {
+                document.getElementById("registerMessage").innerHTML = "";
+            }, 1750);
+
+        }catch(err){
+            console.log("Error adding paragraph" + err);
+        }
+        
+    }
+        
+    async function addpara(){//handles adding content
+        const title = document.getElementById("titleInput").value;
+        const para = document.getElementById("paragraphInput").value;
+
+        if (para.trim() == "") {//checks if main body of content is left empty
+            alert('Please type a paragraph or title before submitting!');
+            return;
+        }
+        const parajson = JSON.stringify({title: title, paragraph: para});
+
+        try{
+            const response = await fetch ("http://localhost:8080/M00961140/contents", {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: parajson
+            });
+            const result = await response.json();
+            console.log(result);
+            if (result.status == "error"){//checks status to error, if so then the user is most likely logged on so is promopted to 
+                document.getElementById("responseMessage").innerHTML = "Must be logged in first";
+                document.getElementById("paragraphInput").value = '';
+                document.getElementById("titleInput").value = '';
+                setTimeout(() => {
+                    document.getElementById("responseMessage").innerHTML = "";
+                }, 1750); 
+            }else{//if no error is raised then a message is displayed telling user their content is posted
+                document.getElementById("responseMessage").innerHTML = "Posted!";
+                document.getElementById("paragraphInput").value = '';
+                document.getElementById("titleInput").value = '';
+                setTimeout(() => {
+                    document.getElementById("responseMessage").innerHTML = "";
+                }, 1750); }
+
+        }catch(err){
+            console.log("Error adding paragraph" + err);
+        }
+    }
+
+
+
+    async function searchcontent(){//handles searching for content by key word
+        const searchInput = document.getElementById("searchInput").value;
+
+        console.log("data", searchInput);
+
+        try{
+        const response = await fetch(`http://localhost:8080/M00961140/contents/search?search=${encodeURIComponent(searchInput)}`);//fetches and uses term inputted by user and encoded
+
+        const content = await response.json();
+        console.log(content);
+        displaycontent(content);//if found then this method is called to handle displaying the data found on database
+        }
+        catch(err){
+            console.log("Error getting content" + err);
+        }
+    }
+
+    function displaycontent(content){//handles displaying the data found from user searches
+        const container = document.getElementById("results");
+        container.innerHTML = "";
+
+        if (content.length === 0){//checks length of data found is 0, if so then no data was found matching users search
+            container.innerHTML = '<p>No results found. Try a different search term.</p>';
+            return;
+        }
+
+        content.forEach(item => {//loops through data from response and creates div for each instance
+            const resultDIV = document.createElement('div');
+            resultDIV.className = "result-item";
+            //this separates the data into its respective parts to be displayed separately 
+            resultDIV.innerHTML = `
+            <h3>User: ${item.username}</h3>
+            <h3>Title: ${item.title}</h3>
+            <p> ${item.paragraph}</p>
+            <hr>
+            `;
+            container.append(resultDIV);
+        });
+    }
+
+
+
+
+    async function searchusers(){//handles user searching for other users
+        const nameInput = document.getElementById("nameInput").value;
+
+        console.log("data", nameInput);
+
+        try{
+        const response = await fetch(`http://localhost:8080/M00961140/users/search?search=${encodeURIComponent(nameInput)}`);//fetches and uses term inputted by user and encoded
+
+        const content = await response.json();
+        console.log(content);
+        displayusers(content);//calls to handle displaying users from users search
+        }
+        catch(err){
+            console.log("Error getting content" + err);
+        }}
+    function displayusers(content){
+        const container = document.getElementById("results");
+        container.innerHTML = "";
+
+        if (content.length === 0){//checks length of data found is 0, if so then no data was found matching users search
+            container.innerHTML = '<p>No results found. Try a different search term.</p>';
+            return;
+        }
+
+        content.forEach(item => {//loops through data from response and creates div for each instance
+            const resultDIV = document.createElement('div');
+            resultDIV.className = "result-item";
+            //this separates the data into its respective parts to be displayed separately along with adding a button to allow for user to follow
+            resultDIV.innerHTML = `
+            <h3>User: ${item.username}</h3>
+            <button class="follow-btn" onclick="followUser('${item.username}')">Follow</button>
+            <hr>
+            `;
+            container.append(resultDIV);
+        });
+    }
+
+    async function followUser(username) {//handles user following another user
+    try {
+        const response = await fetch(`http://localhost:8080/M00961140/follow`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username })
+        });
+
+        const result = await response.json();
+        if (result.message) {//checks for valid following
+            alert(result.message);
+        } else {
+            alert('Failed to follow user.');
+        }
+    } catch (err) {
+        console.log("Error following user:", err);
+    }
+}
+
+  </script>
+
+<footer>
+    <h1>Game Viewer</h1>
+</footer>
+
+</html>

@@ -1,0 +1,130 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+header{
+    background-color: rgb(58, 212, 212);
+    width: 100%;
+    padding: 35px;
+}
+
+.title-img{
+    border-style: solid;
+    border-color: lightcyan;
+    border-radius: 20px;
+}
+
+body{
+    background-color: lightcyan;
+}
+
+
+.titleInput{
+    position: absolute;
+    top: 30px;
+    right: 563px;
+} 
+
+.paragraphInput{
+    position: absolute;
+    top: 50px;
+    right: 350px;
+}
+
+.parasubmit{
+    position: absolute;
+    top: 113px;
+    right: 690px;
+}
+
+.responseMessage{
+    position: absolute;
+    top: 113px;
+    right: 500px;
+}
+
+.registerMessage{
+    position: absolute;
+    top: 150px;
+    left: 450px;
+}
+
+.searchInput{
+    position: absolute;
+    top: 50px;
+    right: 150px;
+} 
+
+.refreshbtn{
+    position: absolute;
+    top: 110px;
+    right: 185px;
+}
+
+.searchBtn{
+    position: absolute;
+    top: 50px;
+    right: 100px;
+}
+
+.nameBtn{
+    position: absolute;
+    top: 80px;
+    right: 100px;
+}
+
+.nameInput{
+    position: absolute;
+    top: 80px;
+    right: 150px;
+}
+
+.results-section {
+    margin: 20px 0;
+}
+
+.results-section div {
+    border: 2px solid #aaa;
+    padding: 10px;
+    border-radius: 6px;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    transition: all 0.2s ease;
+}
+
+.results-section div:hover {
+    background-color: #f9f9f9;
+}
+
+.registerusername{
+    position: absolute;
+    top: 150px;
+    left: 35px;
+}
+
+.registerpassword{
+    position: absolute;
+    top: 150px;
+    left: 212px;
+}
+
+.registerbtn{
+    position: absolute;
+    top: 150px;
+    left: 390px;
+}
+
+
+
+footer{
+    position:fixed;
+    left:0px;
+    bottom:0px;
+    width: 100%;
+    height: 75px;
+    background-color: rgb(58, 212, 212);
+    text-align: center;
+    font-size: x-small;
+}
