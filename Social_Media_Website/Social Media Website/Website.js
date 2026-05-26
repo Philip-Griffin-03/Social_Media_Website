@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import { MongoClient,ServerApiVersion, ObjectId } from 'mongodb';
 import session from 'express-session';
 
-const uri = 'mongodb+srv://noscopemlgheadshot:6t3DdxPNq7CYaoOn@cluster0.sipp4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const uri = 'example';
 
 const client = new MongoClient(uri, {//setting up Mongosb server
     serverApi: {
